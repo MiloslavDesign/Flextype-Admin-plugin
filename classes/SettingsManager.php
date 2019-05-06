@@ -15,12 +15,11 @@ use Flextype\Component\Text\Text;
 use Flextype\Component\Form\Form;
 use Flextype\Component\Notification\Notification;
 use function Flextype\Component\I18n\__;
-use Symfony\Component\Yaml\Yaml;
 use Gajus\Dindent\Indenter;
 
 class SettingsManager
 {
-    public static function getSettingsPage()
+    public static function getSettingsManager()
     {
         Registry::set('sidebar_menu_item', 'settings');
 
@@ -31,7 +30,7 @@ class SettingsManager
                 Notification::set('success', __('admin_message_cache_files_deleted'));
                 Http::redirect(Http::getBaseUrl().'/admin/settings');
             } else {
-                die('Request was denied because it contained an invalid security token. Please refresh the page and try again.');
+                die('Request was denied because it contained an invalid security token. Please refresh the entry and try again.');
             }
         }
 
@@ -48,12 +47,12 @@ class SettingsManager
                 Arr::set($settings, 'cache.enabled', (Http::post('cache.enabled') == '1' ? true : false));
                 Arr::set($settings, 'cache.lifetime', (int) Http::post('cache.lifetime'));
 
-                if (Filesystem::setFileContent(PATH['config']['site'] . '/settings.yaml', Yaml::dump(array_merge(Registry::get('settings'), $settings), 10, 2))) {
+                if (Filesystem::setFileContent(PATH['config']['site'] . '/settings.yaml', YamlParser::encode(array_merge(Registry::get('settings'), $settings)))) {
                     Notification::set('success', __('admin_message_settings_saved'));
                     Http::redirect(Http::getBaseUrl().'/admin/settings');
                 }
             } else {
-                die('Request was denied because it contained an invalid security token. Please refresh the page and try again.');
+                die('Request was denied because it contained an invalid security token. Please refresh the entry and try again.');
             }
         }
 
